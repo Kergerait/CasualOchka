@@ -17,7 +17,7 @@ public class Player_Controls : MonoBehaviour
 
     void changeDirection ()
     {
-        isMovingRight = !isMovingRight;       
+        isMovingRight = !isMovingRight;
     }
 
     // Update is called once per frame
@@ -28,11 +28,11 @@ public class Player_Controls : MonoBehaviour
         }
 
         if (isMovingRight) {
-            rb.velocity = new Vector3 (speed, 0f, 0f);    
-        }
-        else {
             rb.velocity = new Vector3 (0f, 0f, speed);
         }
-        
+        else {
+            rb.velocity = new Vector3 (speed, 0f, 0f);
+        }
+
     }
 }
