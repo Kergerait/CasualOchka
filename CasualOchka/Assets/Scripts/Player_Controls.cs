@@ -1,38 +1,121 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.Scripts;
+using UnityEngine.SceneManagement;
+
 
 public class Player_Controls : MonoBehaviour
 {
+    private Vector3 moveDirection = Vector3.zero;
+    public float gravity = 20f;
+    private CharacterController controller;
+    private Animator anim;
 
-    private Rigidbody rb;
-    private float speed = 1f;   // Скорость движения объекта тут
-    private bool isMovingRight = true;
+    public float JumpSpeed = 8.0f;
+    public float Speed = 6.0f;
+    public Transform CharacterGO;
 
-    // Start is called before the first frame update
+    bool isInSwipeArea;
+
+
+    IInputDetector inputDetector = null;
+
+    // Use this for initialization
     void Start()
     {
-        rb = GetComponent<Rigidbody> ();
-    }
+        moveDirection = transform.forward;
+        moveDirection = transform.TransformDirection(moveDirection);
+        moveDirection *= Speed;
 
-    void changeDirection ()
-    {
-        isMovingRight = !isMovingRight;
+        UIManager.Instance.ResetScore();
+        UIManager.Instance.SetStatus(Constants.StatusTapToStart);
+
+        Game_manager.Instance.GameState = GameState.Start;
+
+        anim = CharacterGO.GetComponent<Animator>();
+        inputDetector = GetComponent<IInputDetector>();
+        controller = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) {
-            changeDirection();
+        switch (Game_manager.Instance.GameState)
+        {
+            case GameState.Start:
+                if (Input.GetMouseButtonUp(0))
+                {
+                    anim.SetBool(Constants.AnimationStarted, true);
+                    var instance = Game_manager.Instance;
+                    instance.GameState = GameState.Playing;
+
+                    UIManager.Instance.SetStatus(string.Empty);
+                }
+                break;
+            case GameState.Playing:
+                UIManager.Instance.IncreaseScore(0.001f);
+
+                CheckHeight();
+
+                DetectJumpOrSwipeLeftRight();
+
+                //apply gravity
+                moveDirection.y -= gravity * Time.deltaTime;
+                //move the player
+                controller.Move(moveDirection * Time.deltaTime);
+
+                break;
+            case GameState.Dead:
+                anim.SetBool(Constants.AnimationStarted, false);
+                if (Input.GetMouseButtonUp(0))
+                {
+                    //restart
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                }
+                break;
+            default:
+                break;
         }
 
-        if (isMovingRight) {
-            rb.velocity = new Vector3 (0f, 0f, speed);
+    }
+
+    private void CheckHeight()
+    {
+        if (transform.position.y < -10)
+        {
+            Game_manager.Instance.Die();
         }
-        else {
-            rb.velocity = new Vector3 (speed, 0f, 0f);
+    }
+
+    private void DetectJumpOrSwipeLeftRight()
+    {
+        var inputDirection = inputDetector.DetectInputDirection();
+        if (controller.isGrounded && inputDirection.HasValue && inputDirection == InputDirection.Top)
+        {
+            moveDirection.y = JumpSpeed;
+            anim.SetBool(Constants.AnimationJump, true);
+        }
+        else
+        {
+            anim.SetBool(Constants.AnimationJump, false);
         }
 
+
+        if (Game_manager.Instance.CanSwipe && inputDirection.HasValue &&
+         controller.isGrounded && inputDirection == InputDirection.Right)
+        {
+            transform.Rotate(0, 90, 0);
+            moveDirection = Quaternion.AngleAxis(90, Vector3.up) * moveDirection;
+            //allow the user to swipe once per swipe location
+            Game_manager.Instance.CanSwipe = false;
+        }
+        else if (Game_manager.Instance.CanSwipe && inputDirection.HasValue &&
+         controller.isGrounded && inputDirection == InputDirection.Left)
+        {
+            transform.Rotate(0, -90, 0);
+            moveDirection = Quaternion.AngleAxis(-90, Vector3.up) * moveDirection;
+            Game_manager.Instance.CanSwipe = false;
+        }
     }
 }
