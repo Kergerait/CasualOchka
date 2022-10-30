@@ -54,7 +54,7 @@ public class Player_Controls : MonoBehaviour
                 }
                 break;
             case GameState.Playing:
-                UIManager.Instance.IncreaseScore(0.001f);
+                UIManager.Instance.IncreaseScore(0);
 
                 CheckHeight();
 

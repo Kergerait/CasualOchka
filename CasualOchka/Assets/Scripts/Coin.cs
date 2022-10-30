@@ -11,5 +11,5 @@ public class Coin : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public int ScorePoints = 100;
+    public int ScorePoints = 1;
 }

@@ -34,7 +34,7 @@ public class UIManager : MonoBehaviour
     {
     }
 
-    private float score = 0;
+    private int score = 0;
 
 
     public void ResetScore()
@@ -43,13 +43,13 @@ public class UIManager : MonoBehaviour
         UpdateScoreText();
     }
     
-    public void SetScore(float value)
+    public void SetScore(int value)
     {
         score = value;
         UpdateScoreText();
     }
 
-    public void IncreaseScore(float value)
+    public void IncreaseScore(int value)
     {
         score += value;
         UpdateScoreText();
