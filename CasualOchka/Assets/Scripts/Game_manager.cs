@@ -36,7 +36,6 @@ public class Game_manager : MonoBehaviour
     protected Game_manager()
     {
         GameState = GameState.Start;
-        CanSwipe = false;
     }
  
     public GameState GameState { get; set; }

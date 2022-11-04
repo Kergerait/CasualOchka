@@ -102,20 +102,19 @@ public class Player_Controls : MonoBehaviour
         }
 
 
-        if (Game_manager.Instance.CanSwipe && inputDirection.HasValue &&
+        if (inputDirection.HasValue &&
          controller.isGrounded && inputDirection == InputDirection.Right)
         {
             transform.Rotate(0, 90, 0);
             moveDirection = Quaternion.AngleAxis(90, Vector3.up) * moveDirection;
-            //allow the user to swipe once per swipe location
-            Game_manager.Instance.CanSwipe = false;
+            
         }
-        else if (Game_manager.Instance.CanSwipe && inputDirection.HasValue &&
+        else if (inputDirection.HasValue &&
          controller.isGrounded && inputDirection == InputDirection.Left)
         {
             transform.Rotate(0, -90, 0);
             moveDirection = Quaternion.AngleAxis(-90, Vector3.up) * moveDirection;
-            Game_manager.Instance.CanSwipe = false;
+            
         }
     }
 }
