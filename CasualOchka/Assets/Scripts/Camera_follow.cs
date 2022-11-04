@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class Camera_follow : MonoBehaviour
 {
-
-    public GameObject player;
-    public Vector3 offset;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        offset = transform.position - player.transform.position;
-    }
+    public Transform target;
+    public float trailDistance = 5.0f;
+    public float heightOffcet = 3.0f;
+    public float cameraDelay = 0.02f;
 
     // Update is called once per frame
     void Update()
     {
-        transform.position = player.transform.position + offset;
+        Vector3 followPos = target.position - target.forward * trailDistance;
+
+        followPos.y += heightOffcet;
+        transform.position += (followPos - transform.position) * cameraDelay;
+
+        transform.LookAt(target.transform);
     }
 }

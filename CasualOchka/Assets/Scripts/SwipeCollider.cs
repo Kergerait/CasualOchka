@@ -13,6 +13,6 @@ public class SwipeCollider : MonoBehaviour
     void OnTriggerExit(Collider hit)
     {
         if (hit.gameObject.tag == Constants.PlayerTag)
-            Game_manager.Instance.CanSwipe = false;
+            Game_manager.Instance.CanSwipe = true;
     }
 }
